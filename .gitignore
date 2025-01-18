@@ -1,0 +1,5 @@
+# Ignore .env files
+.env
+
+# Ensure .env files are ignored
+*.env
