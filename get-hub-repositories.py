@@ -3,6 +3,7 @@ import json
 import requests
 from dotenv import load_dotenv
 from collections import defaultdict
+from datetime import datetime
 
 class RepoInfo:
     def __init__(self, owner, name, url, avatar_url,archived):
@@ -64,7 +65,7 @@ for i in range(0, len(repo_info_list), batch_size):
     batch = repo_info_list[i:i + batch_size]
     
     # Create a new adaptive card for each batch
-    adaptiveCard["body"][0]["rows"] = []
+    adaptiveCard["body"][0]["rows"] = adaptiveCard["body"][0]["rows"][:1]
     
     # Add the data rows to the adaptive card
     for item in batch:
@@ -98,10 +99,16 @@ for i in range(0, len(repo_info_list), batch_size):
                         },
                         {
                             "type": "TextBlock",
-                            "text": "**ARCHIVED**",
+                            "text": f"ARCHIVED",
                             "wrap": True,
                             "$when": f"{item.archived}",
                             "color": "Attention"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": f"Last Checked: {datetime.now().strftime("%d/%m/%d/%y")}",
+                            "wrap": True
+                            
                         }
                     ]
                 },
