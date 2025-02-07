@@ -64,11 +64,27 @@ os.chdir(backup_dir)
 # Process search results in batches of 10 (To keep Adaptive card size below 28k)
 
 for item in repo_info_list:
-
-    print(f"Processing repository: {item.url}")
-    # Clone the repository
-    clone_url = f"{item.url}.git"
-    subprocess.run(['git', 'clone', clone_url], cwd=backup_dir)
     
+    DELETE_URL = f'https://api.github.com/repos/microsoft/{item.name}'
+    
+    print(f"Deleting repository: {item.url}")
+    
+    response_delete = requests.delete(DELETE_URL, headers=headers)
 
-print(Fore.BLUE + "Finished sending all messages to Teams!" + Style.RESET_ALL)
+    if (response_delete.status_code == 404):
+        print(Fore.WHITE + f"Repo: {item.name} Already Deleted." + Style.RESET_ALL)
+    
+    if (response_delete.status_code == 403):
+        print(Fore.CYAN + f"Repo: {item.name} MUST HAVE ADMIN RIGHTS" + Style.RESET_ALL)
+        
+    if response_delete.status_code == 204:
+        
+        if (response_delete.reason == 'No Content'):
+            print(Fore.WHITE + f"Repo: {item.name} Already Deleted." + Style.RESET_ALL)
+        else:
+            print(Fore.GREEN + f"Repo: {item.name} deleted successfully" + Style.RESET_ALL)
+
+        print(Fore.GREEN + "finished deleting repository!" + Style.RESET_ALL)
+
+    else:
+        print(Fore.RED + f"Repo: {item.name} not deleted" + Style.RESET_ALL)
